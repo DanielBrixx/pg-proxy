@@ -3,25 +3,29 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: '*' }));
+
+app.get('/', (req, res) => res.send('PeterGames Proxy Running ✅'));
 
 app.get('/proxy', async (req, res) => {
   const url = req.query.url;
-  if (!url) return res.status(400).send('No URL');
+  if (!url) return res.status(400).send('Missing url param');
   try {
-    const response = await fetch(url, {
+    const r = await fetch(decodeURIComponent(url), {
       headers: {
-        'User-Agent': 'Mozilla/5.0',
-        'Referer': 'https://www.crazygames.com'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Referer': 'https://www.crazygames.com/',
+        'Accept': '*/*'
       }
     });
-    const contentType = response.headers.get('content-type') || '';
-    res.set('Content-Type', contentType);
-    res.set('Access-Control-Allow-Origin', '*');
-    response.body.pipe(res);
-  } catch (e) {
-    res.status(500).send('Proxy error: ' + e.message);
+    const ct = r.headers.get('content-type') || 'text/plain';
+    res.setHeader('Content-Type', ct);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    r.body.pipe(res);
+  } catch(e) {
+    res.status(500).send('Error: ' + e.message);
   }
 });
 
-app.listen(process.env.PORT || 3000, () => console.log('Proxy running'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log('Proxy on port ' + PORT));
