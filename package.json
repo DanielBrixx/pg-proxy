@@ -8,8 +8,6 @@
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
-    "@titaniumnetwork-dev/ultraviolet": "^3.2.6",
-    "http-party": "^0.1.3",
     "node-fetch": "2.6.9"
   }
 }
